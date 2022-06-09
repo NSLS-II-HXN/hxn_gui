@@ -1,0 +1,9 @@
+<RCC>
+  <qresource prefix="hxnlogo">
+    <file>run.jpg</file>
+    <file>Profile-NEW-NSLS-II.jpg</file>
+    <file>BSUI_Logo.jpeg</file>
+    <file>BNL_Logo.jpeg</file>
+    <file>HXN_Logo.PNG</file>
+  </qresource>
+</RCC>

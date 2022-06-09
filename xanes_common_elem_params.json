@@ -1,0 +1,170 @@
+{
+    "Cr K": {
+        "mono_e": {
+            "low": 5.97,
+            "high": 6.03
+        },
+        "ugap": {
+            "low": 6616,
+            "high": 6665
+        },
+        "crl": {
+            "low": 12,
+            "high": 12
+        },
+        "zpz1": {
+            "low": -6.7657,
+            "high": -7.1197
+        },
+        "crl_combo": {
+            "crl_combo_num": "8"
+        }
+    },
+    "Fe K": {
+        "mono_e": {
+            "low": 7.1,
+            "high": 7.2
+        },
+        "ugap": {
+            "low": 7585,
+            "high": 7675
+        },
+        "crl": {
+            "low": -5,
+            "high": 4
+        },
+        "zpz1": {
+            "low": -8.694,
+            "high": -9.284
+        },
+        "crl_combo": {
+            "crl_combo_num": "12"
+        }
+    },
+    "Mn K": {
+        "mono_e": {
+            "low": 6.5398,
+            "high": 6.6057999999999995
+        },
+        "ugap": {
+            "low": 7085,
+            "high": 7145
+        },
+        "crl": {
+            "low": -10,
+            "high": -10
+        },
+        "zpz1": {
+            "low": -10.5106,
+            "high": -10.9
+        },
+        "crl_combo": {
+            "crl_combo_num": "9+6"
+        }
+    },
+    "Ni K": {
+        "mono_e": {
+            "low": 8.355,
+            "high": 8.455
+        },
+        "ugap": {
+            "low": 5802,
+            "high": 5852
+        },
+        "crl": {
+            "low": 4,
+            "high": 6
+        },
+        "zpz1": {
+            "low": -5.140000000000001,
+            "high": -5.73
+        },
+        "crl_combo": {
+            "crl_combo_num": "12"
+        }
+    },
+    "Zn K": {
+        "mono_e": {
+            "low": 9.6,
+            "high": 9.7
+        },
+        "ugap": {
+            "low": 6435,
+            "high": 6485
+        },
+        "crl": {
+            "low": 2,
+            "high": 5
+        },
+        "zpz1": {
+            "low": 25.13,
+            "high": -24.54
+        },
+        "crl_combo": {
+            "crl_combo_num": "NA"
+        }
+    },
+    "Cu K": {
+        "mono_e": {
+            "low": 8.96,
+            "high": 9.05
+        },
+        "ugap": {
+            "low": 6107,
+            "high": 6157
+        },
+        "crl": {
+            "low": 8,
+            "high": 10
+        },
+        "zpz1": {
+            "low": -19.997300000000003,
+            "high": -20.5283
+        },
+        "crl_combo": {
+            "crl_combo_num": "NA"
+        }
+    },
+    "As K": {
+        "mono_e": {
+            "low": 11.8,
+            "high": 11.9
+        },
+        "ugap": {
+            "low": 7590,
+            "high": 7680
+        },
+        "crl": {
+            "low": -5,
+            "high": 5
+        },
+        "zpz1": {
+            "low": -3.5600000000000005,
+            "high": -4.15
+        },
+        "crl_combo": {
+            "crl_combo_num": "NA"
+        }
+    },
+    "Hf L": {
+        "mono_e": {
+            "low": 11.24,
+            "high": 11.34
+        },
+        "ugap": {
+            "low": 7280,
+            "high": 7335
+        },
+        "crl": {
+            "low": 8,
+            "high": 10
+        },
+        "zpz1": {
+            "low": -33.596,
+            "high": -34.186
+        },
+        "crl_combo": {
+            "crl_combo_num": "22+8+3"
+        }
+    }
+}
