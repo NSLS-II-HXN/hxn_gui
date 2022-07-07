@@ -9,11 +9,11 @@ __enamlcache__/
 
 
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
+# imagefiles/icons
+*.jpg
+*.PNG
+*.png
+*.tiff
 
 # Installer logs
 pip-log.txt

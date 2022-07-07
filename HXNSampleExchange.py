@@ -75,13 +75,13 @@ def StartPumpingProtocol(pBarName):
         [triggerPV(pv) for pv in [pumpBFastOpen,pumpAFastOpen]]
 
                 #wait for vaccum to reach ~1  
-        waitWithProgessBar(10,pBarName[1])
+        waitWithProgessBar(15,pBarName[1])
         
         while caget("XF:03IDC-VA{VT:Chm-CM:1}P-I")>1.2:
             print("waiting for threshold pressure value")
             QtTest.QTest.qWait(30000)
 
-        QtTest.QTest.qWait(60000)
+        QtTest.QTest.qWait(2*1000)
 
         #close pump valves
         [triggerPV(pv) for pv in [pumpBFastClose,pumpAFastClose,
@@ -117,7 +117,7 @@ def StartAutoHeBackFill(pBarName):
     
     print("He backfill strats in 30 seconds; Make sure the cylider is open")
     
-    time.sleep(30)
+    QtTest.QTest.qWait(30*1000)
     #only execute if pump vales are closed
     if readyForHe:    
         triggerPV(startAutoHeBackfill)
