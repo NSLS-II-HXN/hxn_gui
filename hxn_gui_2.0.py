@@ -11,6 +11,7 @@ import webbrowser
 import pyqtgraph as pg
 import json
 import matplotlib
+from functools import partial 
 from scipy.ndimage import rotate
 from epics import caget, caput
 
@@ -33,13 +34,14 @@ class Ui(QtWidgets.QMainWindow):
         self.client = webbrowser.get('firefox')
         self.threadpool = QThreadPool()
         self.tw_hxn_contact.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
-        
+
         self.energies = []
         self.roiDict = {}
 
-        self.motor_list = {'zpssx': zpssx, 'zpssy': zpssy, 'zpssz': zpssz}
-        
-        #self.updateLiveValues(self.livePVs)
+        self.motor_list = {'zpssx': zpssx, 'zpssy': zpssy, 'zpssz': zpssz,
+        'dssx': dssx, 'dssy': dssy, 'dssz': dssz}
+
+        #self.updateLiveValues(self.live_PVs)
         #self.createlivePVList()
         #self.liveUpdateTimer() #working
 
@@ -93,20 +95,38 @@ class Ui(QtWidgets.QMainWindow):
         #self.start.clicked.connect(self.liveUpdateThread)
         #self.start.clicked.connect(self.flyThread)
 
-        self.pb_move_smarx_pos.clicked.connect(self.move_smarx)
-        self.pb_move_smary_pos.clicked.connect(self.move_smary)
-        self.pb_move_smarz_pos.clicked.connect(self.move_smarz)
-        self.pb_move_dth_pos.clicked.connect(self.move_dsth)
-        self.pb_move_zpz_pos.clicked.connect(self.move_zpz1)
 
-        self.pb_move_smarx_neg.clicked.connect(lambda: self.move_smarx(neg_=True))
-        self.pb_move_smary_neg.clicked.connect(lambda: self.move_smary(neg_=True))
-        self.pb_move_smarz_neg.clicked.connect(lambda: self.move_smarz(neg_=True))
-        self.pb_move_dth_pos_neg.clicked.connect(lambda: self.move_dsth(neg_=True))
-        self.pb_move_zpz_neg.clicked.connect(lambda: self.move_zpz1(neg_=True))
+        if False: #self.rb_mll.isChecked():
+            #zpmotors
+            self.pb_move_smarx_pos.clicked.connect(self.move_dsx)
+            self.pb_move_smary_pos.clicked.connect(self.move_dsy)
+            self.pb_move_smarz_pos.clicked.connect(self.move_dsz)
+            self.pb_move_dth_pos.clicked.connect(self.move_dsth)
+            self.pb_move_zpz_pos.clicked.connect(self.move_zpz1)
+
+            self.pb_move_smarx_neg.clicked.connect(lambda: self.move_dsx(neg_=True))
+            self.pb_move_smary_neg.clicked.connect(lambda: self.move_dsy(neg_=True))
+            self.pb_move_smarz_neg.clicked.connect(lambda: self.move_dsz(neg_=True))
+            self.pb_move_dth_pos_neg.clicked.connect(lambda: self.move_dsth(neg_=True))
+            self.pb_move_zpz_neg.clicked.connect(lambda: self.move_zpz1(neg_=True))
+
+        else:
+
+
+            self.pb_move_smarx_pos.clicked.connect(self.move_smarx)
+            self.pb_move_smary_pos.clicked.connect(self.move_smary)
+            self.pb_move_smarz_pos.clicked.connect(self.move_smarz)
+            self.pb_move_dth_pos.clicked.connect(self.move_dsth)
+            self.pb_move_zpz_pos.clicked.connect(self.move_zpz1)
+
+            self.pb_move_smarx_neg.clicked.connect(lambda: self.move_smarx(neg_=True))
+            self.pb_move_smary_neg.clicked.connect(lambda: self.move_smary(neg_=True))
+            self.pb_move_smarz_neg.clicked.connect(lambda: self.move_smarz(neg_=True))
+            self.pb_move_dth_pos_neg.clicked.connect(lambda: self.move_dsth(neg_=True))
+            self.pb_move_zpz_neg.clicked.connect(lambda: self.move_zpz1(neg_=True))
 
         # Detector/Camera Motions
-        
+
         #Merlin
         self.pb_merlinOUT.clicked.connect(self.merlinOUT)
         self.pb_merlinIN.clicked.connect(self.merlinIN)
@@ -131,7 +151,7 @@ class Ui(QtWidgets.QMainWindow):
         self.pb_auto_he_fill.clicked.connect(self.heBackFillThread)
         self.pb_vent.clicked.connect(self.ventThread)
 
-        #SSA2 motion 
+        #SSA2 motion
         self.pb_SSA2_Open.clicked.connect(lambda:self.SSA2_Pos(2.1, 2.1))
         self.pb_SSA2_Close.clicked.connect(lambda:self.SSA2_Pos(0.05, 0.03))
         self.pb_SSA2_Close.clicked.connect(lambda:self.SSA2_Pos(0.05, 0.03))
@@ -144,7 +164,7 @@ class Ui(QtWidgets.QMainWindow):
         self.pb_S5_HClose.clicked.connect(lambda:self.S5_Pos(0.1,0.28))
         self.pb_S5_VClose.clicked.connect(lambda:self.S5_Pos(0.28,0.1))
 
-        #front end 
+        #front end
         self.pb_FS_IN.clicked.connect(self.FS_IN)
         self.pb_FS_OUT.clicked.connect(self.FS_OUT)
 
@@ -198,15 +218,22 @@ class Ui(QtWidgets.QMainWindow):
         # close the application
         self.actionClose_Application.triggered.connect(self.close_application)
 
+        self.create_live_pv_dict()
+        self.create_pump_pv_dict()
+        
+
         self.liveUpdateThread()
         self.scanStatusThread()
+        self.pump_update_thread()
 
-        self.show()   
+        self.show()
 
-    def createlivePVList(self):
-        #any change here should be made at the thread class too
 
-        self.livePVs = { 
+    #old way not used; delete later
+    def createlivePVList2(self):
+        #any change here should be made at the thread class too , not good, TODO pass this dict to the thread?
+
+        live_PVs = {
             self.lcd_ic3:int(caget("XF:03IDC-ES{Sclr:2}_cts1.D")),
             self.lcd_monoE:caget("XF:03ID{}Energy-I"),
             self.lcdPressure:caget("XF:03IDC-VA{VT:Chm-CM:1}P-I"),
@@ -227,43 +254,79 @@ class Ui(QtWidgets.QMainWindow):
             self.db_s5_x:s5.hgap.position,
             self.db_s5_y:s5.vgap.position
             }
-        return self.livePVs
-    
-    '''
-    #moved to a thread
-    def updateLiveValues(self,livePVs):
-        #print ("updating live values")
-        self.livePVs = self.createlivePVList()
-        for item in livePVs.items():
-            if isinstance (item[0],QLabel):
-                if item[1]==1:
-                    item[0].setText("        Scan in Progress       ")
-                    item[0].setStyleSheet('background-color : green')
-                else:
-                    item[0].setText("         Idle        ")
-                    item[0].setStyleSheet('background-color : yellow')
+        return live_PVs
 
-            else:
-                #print("False")
+    
+    def create_live_pv_dict(self):
+        '''
+        generate a dictionary of slots and signals , 
+        later change to a json for flexibity ,; like mll specific?
+        '''
+
+        self.live_PVs = {
+
+            self.lcd_ic3:"XF:03IDC-ES{Sclr:2}_cts1.D",
+            self.lcd_monoE:"XF:03ID{}Energy-I",
+            self.lcdPressure:"XF:03IDC-VA{VT:Chm-CM:1}P-I",
+            self.lcd_scanNumber:"XF:03IDC-ES{Status}ScanID-I",
+            self.db_smarx:smarx,
+            self.db_smary:smary,
+            self.db_smarz:smarz,
+            self.db_zpsth:zpsth,
+            self.lcd_ZpTh:zpsth,
+            self.db_zpz1:zp.zpz1,
+            self.db_ssa2_x:ssa2.hgap,
+            self.db_ssa2_y:ssa2.vgap,
+            self.db_fs:"XF:03IDA-OP{FS:1-Ax:Y}Mtr.RBV",
+            self.db_cam6:"XF:03IDC-OP{Stg:CAM6-Ax:X}Mtr.RBV",
+            self.db_fs_det:fdet1.x,
+            self.db_diffx:diff.x,
+            self.db_cam06x:"XF:03IDC-OP{Stg:CAM6-Ax:X}Mtr.RBV",
+            self.db_s5_x:s5.hgap,
+            self.db_s5_y:s5.vgap,
+
+            }
+        
+
+
+    def create_pump_pv_dict(self):
+        '''
+        1--> valves closed, 0--> open
+        could not find PVs
+        self.rb_pumpA_on:
+        self.rb_pumpB_on:
+        self.rb_he_backfill_fail:
+        '''
+
+
+        self.pump_PVs = {
+
+            self.rb_slow_vent:"XF:03IDC-VA{ES:1-SlowVtVlv:Stg2}Sts:Cls-Sts",
+            self.rb_fast_vent:"XF:03IDC-VA{ES:1-FastVtVlv:Stg3}Sts:Cls-Sts",
+            self.rb_pumpA_slow:"XF:03IDC-VA{ES:1-SlowFrVlv:A}Cmd:Opn-Cmd",
+            self.rb_pumpA_fast:"XF:03IDC-VA{ES:1-FastFrVlv:A}Cmd:Opn-Cmd",
+            self.rb_pumpB_slow:"XF:03IDC-VA{ES:1-SlowFrVlv:B}Cmd:Opn-Cmd",
+            self.rb_pumpB_fast:"XF:03IDC-VA{ES:1-FastFrVlv:B}Cmd:Opn-Cmd",
+            
+            }
+
+
+    def handle_value_signals(self,pv_val_list):
+        #print ("updating live values")
+        livePVs = {key:value for key, value in zip(self.live_PVs.keys(),pv_val_list)}
+        for item in livePVs.items():
                 item[0].setValue(item[1])
 
-    '''
 
-    def updateLiveVals(self,livePVList):
-        #print ("updating live values")
-        self.livePVs = self.createlivePVList()
-        livePVs = {key:value for key, value in zip(self.livePVs.keys(),livePVList)}
-        for item in livePVs.items():
-                item[0].setValue(item[1])
-    '''
-    def liveUpdateTimer(self):
-        #print("live update on")
 
-        self.updateTimer = QTimer()
-        self.updateTimer.timeout.connect(lambda:self.updateLiveValues(self.livePVs))
-        self.updateTimer.start(500)
+    def handle_bool_signals(self,pv_val_list):
     
-    '''
+        #self.pump_PVs.keys() = pv_val_list (works?)
+        livePVs = {key:value for key, value in zip(self.pump_PVs.keys(),pv_val_list)}
+        for item in livePVs.items():
+                item[0].setChecked(int(item[1]))
+
+
 
     def scanStatus(self,sts):
 
@@ -282,9 +345,16 @@ class Ui(QtWidgets.QMainWindow):
 
     def liveUpdateThread(self):
         print("Thread Started")
-        self.liveWorker = liveUpdate()
-        self.liveWorker.current_positions.connect(self.updateLiveVals)
+
+        self.liveWorker = liveUpdate(self.live_PVs)
+        self.liveWorker.current_positions.connect(self.handle_value_signals)
         self.liveWorker.start()
+
+    def pump_update_thread(self):
+        print("Pump Update Thread Started")
+        self.pump_update_worker = liveUpdate(self.pump_PVs)
+        self.liveWorker.current_positions.connect(self.handle_bool_signals)
+        self.pump_update_worker.start()
 
     def scanStatusMonitor(self):
         scanStatus = caget("XF:03IDC-ES{Status}ScanRunning-I")
@@ -325,7 +395,7 @@ class Ui(QtWidgets.QMainWindow):
         self.motor1 = self.cb_motor1.currentText()
         self.motor2 = self.cb_motor2.currentText()
 
-        
+
         self.det_list = {'dets1': dets1, 'dets2': dets2, 'dets3': dets3,
                          'dets4': dets4, 'dets_fs': dets_fs}
 
@@ -457,13 +527,29 @@ class Ui(QtWidgets.QMainWindow):
         else:
             RE(movr_zpz1(self.db_move_zpz.value() * 0.001))
 
+    #mll
+
+    def move_dsx(self, neg_=False):
+        self.moveAMotor(self.db_move_smarx, dsx, 1, neg=neg_)
+
+    def move_dsy(self, neg_=False):
+        self.moveAMotor(self.db_move_smary, dsy, 1, neg=neg_)
+
+    def move_dsz(self, neg_=False):
+        self.moveAMotor(self.db_move_smarz, dsz, 1, neg=neg_)
+
+    def move_dsth(self, neg_=False):
+        self.moveAMotor(self.db_move_dth, dsth, neg=neg_)
+
+
+
     def ZP_OSA_OUT(self):
         curr_pos = caget("XF:03IDC-ES{ANC350:5-Ax:1}Mtr.VAL")
         if curr_pos >2000:
             self.ple_info.appendPlainText('OSAY is out of IN range')
         else:
             caput("XF:03IDC-ES{ANC350:5-Ax:1}Mtr.VAL",curr_pos+2700)
-        
+
         self.ple_info.appendPlainText('OSA Y moved OUT')
 
     def ZP_OSA_IN(self):
@@ -547,12 +633,12 @@ class Ui(QtWidgets.QMainWindow):
         caput('XF:03IDC-OP{Slt:SSA2-Ax:XAp}Mtr.VAL', x)
         caput('XF:03IDC-OP{Slt:SSA2-Ax:YAp}Mtr.VAL', y)
         QtTest.QTest.qWait(15000)
-           
+
     def S5_Pos(self, x, y):
         caput('XF:03IDC-ES{Slt:5-Ax:Vgap}Mtr.VAL', x) #PV names seems flipped
         caput('XF:03IDC-ES{Slt:5-Ax:Hgap}Mtr.VAL', y)
         QtTest.QTest.qWait(15000)
-        
+
     def plot_me(self):
         sd = self.pb_plot_sd.text()
         elem = self.pb_plot_elem.text()
@@ -728,29 +814,29 @@ class Ui(QtWidgets.QMainWindow):
 
         if dE < 1:
             '''
-            RE(zp_list_xanes2d(self.xanesParamsDict, 
+            RE(zp_list_xanes2d(self.xanesParamsDict,
                                self.det_list[self.det],
-                               self.motor_list[self.motor1], 
-                               self.mot1_s, 
-                               self.mot1_e, 
+                               self.motor_list[self.motor1],
+                               self.mot1_s,
+                               self.mot1_e,
                                self.mot1_steps,
-                               self.motor_list[self.motor2],  
-                               self.mot2_s, 
-                               self.mot2_e, 
-                               self.mot2_steps, 
+                               self.motor_list[self.motor2],
+                               self.mot2_s,
+                               self.mot2_e,
+                               self.mot2_steps,
                                self.dwell_t,
-                               alignX=(self.x_align_s, 
-                                       self.x_align_e, 
-                                       self.x_align_stp, 
+                               alignX=(self.x_align_s,
+                                       self.x_align_e,
+                                       self.x_align_stp,
                                        self.x_align_dw,
-                                       self.x_align_elem, 
+                                       self.x_align_elem,
                                        self.align_x_thr,
                                        self.doXAlign),
-                               alignY=(self.y_align_s, 
-                                       self.y_align_e, 
+                               alignY=(self.y_align_s,
+                                       self.y_align_e,
                                        self.y_align_stp,
-                                       self.y_align_dw, 
-                                       self.y_align_elem, 
+                                       self.y_align_dw,
+                                       self.y_align_elem,
                                        self.align_y_thr,
                                        self.doYAlign),
                                pdfElem=self.elemPlot,
@@ -812,7 +898,7 @@ class Ui(QtWidgets.QMainWindow):
     def zpMoveAbs(self):
         zpTarget = self.dsb_ZPZ1TargetPos.value()
         choice = QMessageBox.question(self, "Zone Plate Z Motion",
-                                      f"You're making an Absolute motion of ZP to {zpTarget}. \n Proceed?", 
+                                      f"You're making an Absolute motion of ZP to {zpTarget}. \n Proceed?",
                                       QMessageBox.Yes |
                                       QMessageBox.No, QMessageBox.No)
         QtTest.QTest.qWait(500)
@@ -821,7 +907,7 @@ class Ui(QtWidgets.QMainWindow):
 
         else:
             pass
-        
+
     def zpRotAlignment(self):
         pass
 
@@ -1008,7 +1094,7 @@ class Ui(QtWidgets.QMainWindow):
         if zDiff>1 and zp_flag:
                 choice = QMessageBox.question(self, 'Warning',
                 "You are recovering positions from a scan done at a different Focus."
-                "The ZPZ1 motion could cause collision. Are you sure??", 
+                "The ZPZ1 motion could cause collision. Are you sure??",
                 QMessageBox.Yes |QMessageBox.No, QMessageBox.No)
 
                 if choice == QMessageBox.Yes:
@@ -1360,9 +1446,9 @@ class liveStatus(QThread):
     def __init__(self, PV):
         super().__init__()
         self.PV = PV
-    
+
     def run(self):
-    
+
         while True:
             self.current_sts.emit(caget(self.PV))
             #print("New positions")
@@ -1372,7 +1458,32 @@ class liveStatus(QThread):
 class liveUpdate(QThread):
     current_positions = pyqtSignal(list)
 
+    def __init__(self, pv_dict):
+        super().__init__()
+        self.pv_dict = pv_dict
+
+    def return_values(self):
+        readings = []
+        for i in self.pv_dict.values():
+            try:
+                readings.append(i.position)
+            except:
+                readings.append(caget(i))
+
+        return readings
+
+
+    #use moveToThread method later
     def run(self):
+
+        while True:
+            positions = self.return_values()
+            #self.pv_list = list(self.pv_dict.values())
+            self.current_positions.emit(positions)
+            #print(list(self.pv_dict.values())[0])
+            QtTest.QTest.qWait(500)
+
+        '''
 
         while True:
             self.current_positions.emit([
@@ -1396,8 +1507,11 @@ class liveUpdate(QThread):
             s5.hgap.position,
             s5.vgap.position
         ])
-            #print(livePVList[0])
+
+            #print(list(self.pv_dict.values())[0])
             QtTest.QTest.qWait(500)
+        '''
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
