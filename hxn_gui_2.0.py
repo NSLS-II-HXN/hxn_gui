@@ -23,12 +23,18 @@ from pdf_log import *
 from xanes2d import *
 from xanesFunctions import *
 from HXNSampleExchange import *
+HXNSampleExchanger = SampleExchangeProtocol()
+
+
+
 ui_path = os.path.dirname(os.path.abspath(__file__))
 
 class Ui(QtWidgets.QMainWindow):
+   
     def __init__(self):
         super(Ui, self).__init__()
-        uic.loadUi(os.path.join(ui_path,'hxn_gui_2.0.ui'), self)
+        
+        uic.loadUi(os.path.join(ui_path,'hxn_gui_v3.ui'), self)
         self.initParams()
         self.ImageCorrelationPage()
         self.client = webbrowser.get('firefox')
@@ -41,12 +47,9 @@ class Ui(QtWidgets.QMainWindow):
         self.motor_list = {'zpssx': zpssx, 'zpssy': zpssy, 'zpssz': zpssz,
         'dssx': dssx, 'dssy': dssy, 'dssz': dssz}
 
-        #self.updateLiveValues(self.live_PVs)
-        #self.createlivePVList()
-        #self.liveUpdateTimer() #working
 
+        
 
-        # updating resolution/tot time
         self.dwell.valueChanged.connect(self.initParams)
         self.x_step.valueChanged.connect(self.initParams)
         self.y_step.valueChanged.connect(self.initParams)
@@ -147,9 +150,14 @@ class Ui(QtWidgets.QMainWindow):
         #self.pb_vent.clicked.connect(lambda:ventChamber([self.prb_vent_slow,self.prb_vent_fast]))
 
         # sample exchange
-        self.pb_start_pump.clicked.connect(self.pumpThread)
-        self.pb_auto_he_fill.clicked.connect(self.heBackFillThread)
-        self.pb_vent.clicked.connect(self.ventThread)
+        #self.pb_start_pump.clicked.connect(self.pumpThread)
+        #self.pb_auto_he_fill.clicked.connect(self.heBackFillThread)
+        #self.pb_vent.clicked.connect(self.ventThread)
+        self.pb_vent.clicked.connect(HXNSampleExchanger.start_vending)
+        self.pb_stop_vent.clicked.connect(HXNSampleExchanger.stop_vending)
+        self.pb_start_pump.clicked.connect(self.pumping_start_thread)
+        self.pb_stop_pump.clicked.connect(self.pumping_stop)
+        self.pb_auto_he_fill.clicked.connect(HXNSampleExchanger.auto_he_backfill)
 
         #SSA2 motion
         self.pb_SSA2_Open.clicked.connect(lambda:self.SSA2_Pos(2.1, 2.1))
@@ -227,36 +235,7 @@ class Ui(QtWidgets.QMainWindow):
         self.pump_update_thread()
 
         self.show()
-
-
-    #old way not used; delete later
-    def createlivePVList2(self):
-        #any change here should be made at the thread class too , not good, TODO pass this dict to the thread?
-
-        live_PVs = {
-            self.lcd_ic3:int(caget("XF:03IDC-ES{Sclr:2}_cts1.D")),
-            self.lcd_monoE:caget("XF:03ID{}Energy-I"),
-            self.lcdPressure:caget("XF:03IDC-VA{VT:Chm-CM:1}P-I"),
-            self.lcd_scanNumber:int(caget("XF:03IDC-ES{Status}ScanID-I")),
-            self.db_smarx:smarx.position,
-            self.db_smary:smary.position,
-            self.db_smarz:smarz.position,
-            self.db_zpsth:np.around(zpsth.position,2),
-            self.lcd_ZpTh:np.around(zpsth.position,2),
-            self.db_zpz1:np.around(zp.zpz1.position,4),
-            self.db_ssa2_x:ssa2.hgap.position,
-            self.db_ssa2_y:ssa2.vgap.position,
-            self.db_fs:caget("XF:03IDA-OP{FS:1-Ax:Y}Mtr.RBV"),
-            self.db_cam6:caget("XF:03IDC-OP{Stg:CAM6-Ax:X}Mtr.RBV"),
-            self.db_fs_det:np.around(fdet1.x.position,1),
-            self.db_diffx:np.around(diff.x.position,1),
-            self.db_cam06x:caget("XF:03IDC-OP{Stg:CAM6-Ax:X}Mtr.RBV"),
-            self.db_s5_x:s5.hgap.position,
-            self.db_s5_y:s5.vgap.position
-            }
-        return live_PVs
-
-    
+  
     def create_live_pv_dict(self):
         '''
         generate a dictionary of slots and signals , 
@@ -287,8 +266,6 @@ class Ui(QtWidgets.QMainWindow):
 
             }
         
-
-
     def create_pump_pv_dict(self):
         '''
         1--> valves closed, 0--> open
@@ -310,23 +287,19 @@ class Ui(QtWidgets.QMainWindow):
             
             }
 
-
     def handle_value_signals(self,pv_val_list):
         #print ("updating live values")
         livePVs = {key:value for key, value in zip(self.live_PVs.keys(),pv_val_list)}
         for item in livePVs.items():
                 item[0].setValue(item[1])
 
-
-
     def handle_bool_signals(self,pv_val_list):
     
         #self.pump_PVs.keys() = pv_val_list (works?)
         livePVs = {key:value for key, value in zip(self.pump_PVs.keys(),pv_val_list)}
         for item in livePVs.items():
-                item[0].setChecked(int(item[1]))
-
-
+                item[0].setChecked(item[1])
+                
 
     def scanStatus(self,sts):
 
@@ -352,8 +325,8 @@ class Ui(QtWidgets.QMainWindow):
 
     def pump_update_thread(self):
         print("Pump Update Thread Started")
-        self.pump_update_worker = liveUpdate(self.pump_PVs)
-        self.liveWorker.current_positions.connect(self.handle_bool_signals)
+        self.pump_update_worker = liveUpdate(self.pump_PVs,update_interval_ms = 2000)
+        self.pump_update_worker.current_positions.connect(self.handle_bool_signals)
         self.pump_update_worker.start()
 
     def scanStatusMonitor(self):
@@ -1423,22 +1396,31 @@ class Ui(QtWidgets.QMainWindow):
         else:
             pass
 
-class WorkerSignals(QObject):
-    finished = QtCore.pyqtSignal(object) # create a signal
-    result = QtCore.pyqtSignal(object) # create a signal that gets an object as argument
 
-class Worker(QRunnable):
-    def __init__(self, fn, *args, **kwargs):
-        super(Worker, self).__init__()
-        self.fn = fn # Get the function passed in
-        self.args = args # Get the arguments passed in
-        self.kwargs = kwargs # Get the keyward arguments passed in
-        self.signals = WorkerSignals()
+    def pumping_start_thread(self, turbo_start = 300, target_pressure = 1.2):
+        
+        QtTest.QTest.qWait(2000)
+        self.lb_target_pressure.setText(f"  Target Pressure = {target_pressure}  ")
+        QtTest.QTest.qWait(2000)
+        self.lb_sample_change_action.setText("  Pumping  ")
+        QtTest.QTest.qWait(2000)
+        
+        self.pump_thread = StartPumpThread(turbo_start,target_pressure)
+        self.pump_thread.start()
+        self.pbar_thread = PressureProgressBar(
+            self.prb_sample_exchange,
+            "XF:03IDC-VA{VT:Chm-CM:1}P-I",
+            760,
+            target_pressure
+        )
+        self.pbar_thread.start()
 
-    def run(self): # our thread's worker function
-        result = self.fn(*self.args, **self.kwargs) # execute the passed in function with its arguments
-        #self.signals.result.emit(result)  # return result
-        self.signals.finished.emit(result)  # emit when thread ended
+    def pumping_stop(self):
+        
+        HXNSampleExchanger.stop_pumping()
+        self.pump_thread.terminate()
+        self.pbar_thread.terminate()
+        self.prb_sample_exchange.reset()
 
 #from FXI--modified
 class liveStatus(QThread):
@@ -1454,13 +1436,14 @@ class liveStatus(QThread):
             #print("New positions")
             QtTest.QTest.qWait(500)
 
-
 class liveUpdate(QThread):
+    
     current_positions = pyqtSignal(list)
 
-    def __init__(self, pv_dict):
+    def __init__(self, pv_dict, update_interval_ms = 500):
         super().__init__()
         self.pv_dict = pv_dict
+        self.update_interval_ms = update_interval_ms
 
     def return_values(self):
         readings = []
@@ -1481,36 +1464,68 @@ class liveUpdate(QThread):
             #self.pv_list = list(self.pv_dict.values())
             self.current_positions.emit(positions)
             #print(list(self.pv_dict.values())[0])
-            QtTest.QTest.qWait(500)
+            #print(positions[0])
+            QtTest.QTest.qWait(self.update_interval_ms)
 
-        '''
+class StartPumpThread(QThread):
 
+    #TODO change to a move to thread method
+
+    def __init__(self, turbo_pressure, target_pressure):
+        super().__init__()
+        self.turbo_pressure = turbo_pressure
+        self.target_pressure = target_pressure
+
+
+    def run(self):
+
+        HXNSampleExchanger.start_pumping(
+            turbo_start_pressure = self.turbo_pressure, 
+            target_pressure = self.target_pressure
+            )
+
+
+class PressureProgressBar(QThread):
+    
+    def __init__(self, pbar, pv, min, max):
+        super().__init__()
+        self.min = min*-1
+        self.max = max*-1
+        self.pbar = pbar
+        self.pv = pv
+
+    def run(self):
+        self.pbar.reset()
+        self.pbar.setRange(int(self.min), int(self.max))
+        
         while True:
-            self.current_positions.emit([
-            int(caget("XF:03IDC-ES{Sclr:2}_cts1.D")),
-            caget("XF:03ID{}Energy-I"),
-            caget("XF:03IDC-VA{VT:Chm-CM:1}P-I"),
-            int(caget("XF:03IDC-ES{Status}ScanID-I")),
-            smarx.position,
-            smary.position,
-            smarz.position,
-            np.around(zpsth.position,2),
-            np.around(zpsth.position,2),
-            np.around(zp.zpz1.position,4),
-            ssa2.hgap.position,
-            ssa2.vgap.position,
-            caget("XF:03IDA-OP{FS:1-Ax:Y}Mtr.RBV"),
-            caget("XF:03IDC-OP{Stg:CAM6-Ax:X}Mtr.RBV"),
-            np.around(fdet1.x.position,1),
-            np.around(diff.x.position,1),
-            caget("XF:03IDC-OP{Stg:CAM6-Ax:X}Mtr.RBV"),
-            s5.hgap.position,
-            s5.vgap.position
-        ])
+            self.pbar.setValue(int(caget(self.pv))*-1)
+            QtTest.QTest.qWait(200)
 
-            #print(list(self.pv_dict.values())[0])
-            QtTest.QTest.qWait(500)
-        '''
+
+
+
+class WorkerSignals(QObject):
+    started = QtCore.pyqtSignal(object)
+    finished = QtCore.pyqtSignal(object) # create a signal
+    result = QtCore.pyqtSignal(object) # create a signal that gets an object as argument
+
+class Worker(QRunnable):
+    def __init__(self, fn, *args, **kwargs):
+        super(Worker, self).__init__()
+        self.fn = fn # Get the function passed in
+        self.args = args # Get the arguments passed in
+        self.kwargs = kwargs # Get the keyward arguments passed in
+        self.signals = WorkerSignals()
+
+    def run(self): # our thread's worker function
+        result = self.fn(*self.args, **self.kwargs) # execute the passed in function with its arguments
+        #self.signals.result.emit(result)  # return result
+        self.signals.finished.emit(result)  # emit when thread ended
+
+
+
+
 
 
 if __name__ == "__main__":

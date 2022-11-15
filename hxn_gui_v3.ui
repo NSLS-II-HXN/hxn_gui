@@ -124,95 +124,15 @@ border-radius: 10px</string>
       </item>
      </layout>
     </item>
-    <item row="0" column="2">
-     <layout class="QHBoxLayout" name="horizontalLayout_13">
-      <property name="leftMargin">
-       <number>0</number>
+    <item row="2" column="0" colspan="5">
+     <widget class="QPlainTextEdit" name="ple_info">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <item>
-       <widget class="QLabel" name="label_122">
-        <property name="styleSheet">
-         <string notr="true">font: 75 20pt &quot;Cantarell&quot;;</string>
-        </property>
-        <property name="text">
-         <string>IC3:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSpinBox" name="lcd_ic3">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">font: 75 22pt &quot;C059&quot;;</string>
-        </property>
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
-        <property name="buttonSymbols">
-         <enum>QAbstractSpinBox::NoButtons</enum>
-        </property>
-        <property name="maximum">
-         <number>2000000</number>
-        </property>
-        <property name="value">
-         <number>500000</number>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item row="0" column="3">
-     <layout class="QGridLayout" name="gridLayout_93">
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_123">
-        <property name="styleSheet">
-         <string notr="true">font: 75 15pt &quot;Cantarell&quot;;</string>
-        </property>
-        <property name="text">
-         <string>E:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QDoubleSpinBox" name="lcd_monoE">
-        <property name="styleSheet">
-         <string notr="true">font: 75 22pt &quot;C059&quot;;</string>
-        </property>
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
-        <property name="buttonSymbols">
-         <enum>QAbstractSpinBox::NoButtons</enum>
-        </property>
-        <property name="suffix">
-         <string> keV</string>
-        </property>
-        <property name="decimals">
-         <number>3</number>
-        </property>
-        <property name="minimum">
-         <double>4.000000000000000</double>
-        </property>
-        <property name="value">
-         <double>12.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     </widget>
     </item>
     <item row="0" column="4">
      <layout class="QGridLayout" name="gridLayout_94">
@@ -277,6 +197,96 @@ border-radius: 10px</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="0" column="3">
+     <layout class="QGridLayout" name="gridLayout_93">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_123">
+        <property name="styleSheet">
+         <string notr="true">font: 75 15pt &quot;Cantarell&quot;;</string>
+        </property>
+        <property name="text">
+         <string>E:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QDoubleSpinBox" name="lcd_monoE">
+        <property name="styleSheet">
+         <string notr="true">font: 75 22pt &quot;C059&quot;;</string>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+        <property name="buttonSymbols">
+         <enum>QAbstractSpinBox::NoButtons</enum>
+        </property>
+        <property name="suffix">
+         <string> keV</string>
+        </property>
+        <property name="decimals">
+         <number>3</number>
+        </property>
+        <property name="minimum">
+         <double>4.000000000000000</double>
+        </property>
+        <property name="value">
+         <double>12.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="0" column="2">
+     <layout class="QHBoxLayout" name="horizontalLayout_13">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="label_122">
+        <property name="styleSheet">
+         <string notr="true">font: 75 20pt &quot;Cantarell&quot;;</string>
+        </property>
+        <property name="text">
+         <string>IC3:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="lcd_ic3">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">font: 75 22pt &quot;C059&quot;;</string>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+        <property name="buttonSymbols">
+         <enum>QAbstractSpinBox::NoButtons</enum>
+        </property>
+        <property name="maximum">
+         <number>2000000</number>
+        </property>
+        <property name="value">
+         <number>500000</number>
         </property>
        </widget>
       </item>
@@ -357,15 +367,21 @@ QRadioButton::indicator {
 	width: 15px;
 	height: 15px;
 	border-radius: 10px;
-    background: rgb(255, 255, 255);
+    background: rgb(255, 200, 0);
 }
 QRadioButton::indicator:hover {
     border: 3px solid rgb(58, 66, 81);
 }
 QRadioButton::indicator:checked {
+    background: 3px solid rgb(255,0, 0);
+	border: 3px solid rgb(0,0,0);	
+}
+
+QRadioButton::indicator:unchecked {
     background: 3px solid rgb(0,255, 0);
 	border: 3px solid rgb(0,0, 0);	
 }
+
 
 	</string>
       </property>
@@ -6459,31 +6475,6 @@ font: 14pt &quot;MS Shell Dlg 2&quot;;</string>
           </property>
          </spacer>
         </item>
-        <item row="1" column="0" colspan="2">
-         <layout class="QGridLayout" name="gridLayout_47">
-          <item row="0" column="0">
-           <widget class="QLabel" name="lb_sample_change_action">
-            <property name="text">
-             <string>Placeholder</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QLabel" name="lb_target_pressure">
-            <property name="text">
-             <string>Target Pressure = </string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QProgressBar" name="prb_sample_exchange">
-            <property name="value">
-             <number>24</number>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
         <item row="2" column="0" colspan="2">
          <widget class="QGroupBox" name="groupBox_22">
           <property name="styleSheet">
@@ -6530,61 +6521,6 @@ p, li { white-space: pre-wrap; }
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QGridLayout" name="gridLayout_39">
-              <item row="1" column="1">
-               <widget class="QLabel" name="label_81">
-                <property name="text">
-                 <string/>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QPushButton" name="pb_start_pump">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="toolTip">
-                 <string>Starts the pumping protocol. Status of all the valves will be checked </string>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true"/>
-                </property>
-                <property name="text">
-                 <string>Start Pumping</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QPushButton" name="pb_stopPump">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Stop Pumping</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="2">
-               <widget class="QPushButton" name="pb_stopVent">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Stop Vending</string>
-                </property>
-               </widget>
-              </item>
               <item row="0" column="1">
                <widget class="QPushButton" name="pb_auto_he_fill">
                 <property name="enabled">
@@ -6601,6 +6537,19 @@ p, li { white-space: pre-wrap; }
                 </property>
                 <property name="text">
                  <string>    Start  Auto He Back Fill       </string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QPushButton" name="pb_stop_vent">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Stop Vending</string>
                 </property>
                </widget>
               </item>
@@ -6677,6 +6626,48 @@ p, li { white-space: pre-wrap; }
                 </property>
                 <property name="text">
                  <string>Start Vending</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QPushButton" name="pb_start_pump">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>Starts the pumping protocol. Status of all the valves will be checked </string>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true"/>
+                </property>
+                <property name="text">
+                 <string>Start Pumping</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLabel" name="label_81">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QPushButton" name="pb_stop_pump">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Stop Pumping</string>
                 </property>
                </widget>
               </item>
@@ -6851,10 +6842,11 @@ p, li { white-space: pre-wrap; }
                     <enum>Qt::RightToLeft</enum>
                    </property>
                    <property name="styleSheet">
-                    <string notr="true">color: rgb(245, 121, 0);</string>
+                    <string notr="true">color: rgb(245, 121, 0);
+</string>
                    </property>
                    <property name="text">
-                    <string>Pump ON</string>
+                    <string/>
                    </property>
                    <property name="autoExclusive">
                     <bool>false</bool>
@@ -6926,7 +6918,7 @@ p, li { white-space: pre-wrap; }
                     <string notr="true">color: rgb(245, 121, 0);</string>
                    </property>
                    <property name="text">
-                    <string>Pump ON</string>
+                    <string/>
                    </property>
                    <property name="autoExclusive">
                     <bool>false</bool>
@@ -6989,7 +6981,15 @@ p, li { white-space: pre-wrap; }
                  <enum>Qt::RightToLeft</enum>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">color: rgb(245, 121, 0);</string>
+                 <string notr="true">color: rgb(245, 121, 0);
+
+indicator {
+    border: 3px solid rgb(52, 59, 72);
+	width: 15px;
+	height: 15px;
+	border-radius: 10px;
+    background: rgb(255, 255, 0);
+}</string>
                 </property>
                 <property name="text">
                  <string>He Backfill Failed?</string>
@@ -7014,6 +7014,31 @@ p, li { white-space: pre-wrap; }
            </size>
           </property>
          </spacer>
+        </item>
+        <item row="1" column="0" colspan="2">
+         <layout class="QGridLayout" name="gridLayout_47">
+          <item row="0" column="1">
+           <widget class="QProgressBar" name="prb_sample_exchange">
+            <property name="value">
+             <number>24</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="lb_target_pressure">
+            <property name="text">
+             <string>Target Pressure = </string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="lb_sample_change_action">
+            <property name="text">
+             <string>Placeholder</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
@@ -8765,16 +8790,6 @@ color: rgb(255, 0, 0);</string>
         </item>
        </layout>
       </widget>
-     </widget>
-    </item>
-    <item row="2" column="0" colspan="5">
-     <widget class="QPlainTextEdit" name="ple_info">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
      </widget>
     </item>
    </layout>

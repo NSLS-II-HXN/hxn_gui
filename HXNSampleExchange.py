@@ -8,10 +8,7 @@ from PyQt5.QtWidgets import QMessageBox, QProgressBar
 
 class SampleExchangeProtocol():
 
-    def __init__(self,pBarName):
-
-            #progresscar to upadte the 
-            self.pBarName = pBarName 
+    def __init__(self):
 
             #pumping PVs
 
@@ -54,7 +51,7 @@ class SampleExchangeProtocol():
             self.startAutoHeBackfill = 'XF:03IDC-VA{ES:1-AutoVt:He}Cmd:Start-Cmd'
         
 
-            self.pressure = caget("XF:03IDC-VA{VT:Chm-CM:1}P-I")
+            self.pressure = "XF:03IDC-VA{VT:Chm-CM:1}P-I"
 
             
 
@@ -65,14 +62,14 @@ class SampleExchangeProtocol():
 
     def start_pumping(self, turbo_start_pressure = 300, target_pressure = 1.2 ):
         
-        #make sure vents are closed
         
+        #make sure vents are closed
         [triggerPV(pv) for pv in [self.fastVentClose,self.slowVentClose]]
         
         
         #turn on pumps 
         #make sure vents are closed
-        if caget(fastVentStatus)==1 and caget(slowVentStatus)==1:
+        if caget(self.fastVentStatus)==1 and caget(self.slowVentStatus)==1:
 
             #turn pumps on and open slow valves
             [triggerPV(pv) for pv in [self.pumpAON,self.pumpASlowOpen,self.pumpBON,self.pumpBSlowOpen]]
@@ -81,24 +78,25 @@ class SampleExchangeProtocol():
             while caget(self.pressure)>turbo_start_pressure:
                 
                 print("waiting for threshold pressure value")
-                QtTest.QTest.qWait(30000)
-
+                QtTest.QTest.qWait(10000)
+                
             print("FAST Open triggered")
-            [triggerPV(pv) for pv in [pumpBFastOpen,pumpAFastOpen]]
+            [triggerPV(pv) for pv in [self.pumpBFastOpen,self.pumpAFastOpen]]
 
             
             while caget(self.pressure)>target_pressure:
                 print("waiting for threshold pressure value")
-                QtTest.QTest.qWait(30000)
+                QtTest.QTest.qWait(10000)
+
 
             QtTest.QTest.qWait(10*1000)
 
             #close pump valves
-            [triggerPV(pv) for pv in [pumpBFastClose,pumpAFastClose,
-                                    pumpBSlowClose,pumpASlowClose]]
+            [triggerPV(pv) for pv in [self.pumpBFastClose,self.pumpAFastClose,
+                                    self.pumpBSlowClose,self.pumpASlowClose]]
 
             #tun off the pumps
-            [triggerPV(pv) for pv in [pumpAOFF,pumpBOFF]]
+            [triggerPV(pv) for pv in [self.pumpAOFF,self.pumpBOFF]]
             
             #Done!
             return 
@@ -106,17 +104,18 @@ class SampleExchangeProtocol():
     def stop_pumping(self):
 
         #close pump valves
-        [triggerPV(pv) for pv in [pumpBFastClose,pumpAFastClose,
-                                    pumpBSlowClose,pumpASlowClose]]
+        [triggerPV(pv) for pv in [self.pumpBFastClose,self.pumpAFastClose,
+                                    self.pumpBSlowClose,self.pumpASlowClose]]
 
         #tun off the pumps
-        [triggerPV(pv) for pv in [pumpAOFF,pumpBOFF]]
+        [triggerPV(pv) for pv in [self.pumpAOFF,self.pumpBOFF]]
             
         #Done!
         return 
 
     def start_vending(self, fast_open_pressure = 550):
         
+
 
         #make sure fluorescence detector is out before relasing the vaccuum
         caput('XF:03IDC-ES{Det:Vort-Ax:X}Mtr.VAL',-107)
@@ -125,8 +124,15 @@ class SampleExchangeProtocol():
         triggerPV(self.slowVentOpen)
         
         while caget("XF:03IDC-VA{VT:Chm-CM:1}P-I")<fast_open_pressure:
-            QtTest.QTest.qWait(30000)
-            print("waiting for threshold pressure ")
+
+            if caget('XF:03IDC-ES{Det:Vort-Ax:X}Mtr.VAL') > -105:
+
+                QtTest.QTest.qWait(30000)
+                print("waiting for threshold pressure ")
+
+            
+            else:
+                break
         
         
         triggerPV(self.fastVentOpen)
@@ -162,22 +168,12 @@ class SampleExchangeProtocol():
 
             return 
             
-        else: print("One or more valves is not closed; try again")
-              return 
+        else: 
+            print("One or more valves is not closed; try again")  
+            return 
 
     def stop_he_backfill(self):
         pass
-
-
-        
-
-
-    
-
-
-    
-
-
 
 
 
@@ -283,7 +279,6 @@ def StartPumpingProtocol(pBarName, start = True):
             #tun off the pumps
             [triggerPV(pv) for pv in [pumpAOFF,pumpBOFF]]
 
-
 def StartAutoHeBackFill(pBarName):
 
     #pump valve status
@@ -314,7 +309,6 @@ def StartAutoHeBackFill(pBarName):
         
     else: return "One or more valves is not closed; try again"
             
-    
 def ventChamber(pBarName):
 
     '''
